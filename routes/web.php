@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/funciones/{id}/asientos', [AsientoController::class, 'showAsientos'])->name('asientos.show');
+Route::get('/asientos/{eventoId}', [AsientoController::class, 'showAsientos']);
