@@ -7,26 +7,22 @@ use GuzzleHttp\Client;
 
 class LoginController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request) {
         if ($request->isMethod('post')) {
             $client = new Client();
 
             try {
-                // Realizar la solicitud GET a la API usando Guzzle, pasando directamente los parámetros
                 $response = $client->get('http://localhost:8080/api/cliente/obtenerPorCorreo', [
                     'query' => [
-                        'correo' => $request->input('correo'), // Asegúrate de que el nombre del input sea "correo"
-                        'contrasenia' => $request->input('contrasenia'), // Asegúrate de que el nombre del input sea "contrasenia"
+                        'correo' => $request->input('correo'),
+                        'contrasenia' => $request->input('contrasenia'),
                     ],
                     'headers' => ['Accept' => 'application/json'],
                 ]);
 
-                // Decodificar la respuesta JSON
                 $user = json_decode($response->getBody(), true);
 
-                // Verificar si la respuesta contiene un código de cliente válido
                 if (!empty($user) && isset($user['codigoCliente'])) {
-                    // Redirigir a la ruta de películas si la autenticación es exitosa
                     return redirect()->route('peliculas');
                 }
 
@@ -37,7 +33,6 @@ class LoginController extends Controller
             }
         }
 
-        // Redirigir a la página de inicio si no es una solicitud POST
         return redirect('/');
     }
 

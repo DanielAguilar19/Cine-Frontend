@@ -81,13 +81,12 @@
     </style>
 </head>
 <body>
-    
-    <form action="{{ route('guardarCliente') }}" method="POST" class="register-form">
+    <form method="POST" action="{{ route('guardarCliente') }}" class="register-form">
         @csrf
         <a href="/" class="btn-back">Regresar</a>
         <div class="form-group">
             <label for="nombreCompleto">Nombre Completo</label>
-            <input type="text" name="nombreCompleto" class="form-control">
+            <input type="text" name="nombreCompleto" class="form-control" required>
         </div>
 
         <div class="form-group">
@@ -102,31 +101,20 @@
 
         <div class="form-group">
             <label for="telefono">Teléfono</label>
-            <input type="text" name="telefono" class="form-control">
+            <input type="text" name="telefono" class="form-control" required>
         </div>
 
         <div class="form-group">
             <label for="correo">Correo Electrónico</label>
-            <input type="email" name="correo" class="form-control">
+            <input type="email" name="correo" class="form-control" required>
         </div>
 
         <div class="form-group">
             <label for="contrasenia">Contraseña</label>
-            <input type="password" name="contrasenia" class="form-control">
+            <input type="password" name="contrasenia" class="form-control" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
-
-    <script>
-        // Este script asegura que la fecha esté en el formato aaaa-mm-dd
-        document.querySelector('.register-form').addEventListener('submit', function(event) {
-            var fechaInput = document.querySelector('input[name="fechaNacimiento"]');
-            var fecha = fechaInput.value;
-            // Aquí podrías agregar cualquier validación adicional si es necesario
-            console.log("Fecha seleccionada: " + fecha); // Esto mostrará la fecha en la consola
-        });
-    </script>
-
 </body>
 </html>
