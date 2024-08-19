@@ -18,7 +18,7 @@ Route::get('/peliculas', [PeliculaController::class, 'index'])->name('peliculas'
 Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos']);
 
 Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
-
+//RUTAS NO FUNCIONADO
 Route::post('/factura', [FacturaController::class, 'store'])->name('factura.store');
 
 Route::get('/detalle', [PeliculaDetalleController::class, 'index']);
