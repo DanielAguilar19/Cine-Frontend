@@ -56,6 +56,12 @@
                 <label for="cantidadBoletos">Cantidad de Boletos:</label>
                 <input type="number" class="form-control" id="cantidadBoletos" name="cantidadBoletos" min="1" max="10" required>
             </div>
+        
+            <div class="form-group">
+                <label for="total">Total a Pagar:</label>
+                <input type="text" id="total" class="form-control" readonly>
+            </div>
+        
             <input type="hidden" name="codigoEvento" value="{{ $evento['codigoEvento'] ?? 0 }}">
             <button type="submit" class="btn btn-primary mt-3">Seleccionar Asientos</button>
         </form>
@@ -65,5 +71,28 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const precioPorBoleto = {{ $sala['tipoSala']['precio'] ?? 0 }}; // Obtener el precio por boleto
+            const cantidadBoletosInput = document.getElementById('cantidadBoletos');
+            const totalInput = document.getElementById('total');
+            const totalHiddenInput = document.getElementById('totalHidden'); // El campo hidden para el total
+    
+            // Función para actualizar el total
+            function actualizarTotal() {
+                const cantidad = parseInt(cantidadBoletosInput.value) || 0;
+                const total = cantidad * precioPorBoleto;
+                totalInput.value = `$${total.toFixed(2)}`;
+                totalHiddenInput.value = total.toFixed(2); // Actualiza el campo hidden
+            }
+    
+            // Actualizar el total cada vez que el usuario cambie la cantidad de boletos
+            cantidadBoletosInput.addEventListener('input', actualizarTotal);
+    
+            // Calcular el total al cargar la página
+            actualizarTotal();
+        });
+    </script>
+    
 </body>
 </html>

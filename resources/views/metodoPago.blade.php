@@ -13,20 +13,21 @@
             <h2 class="text-center">Método de Pago</h2>
         </div>
         <div class="card-body">
-            <p><strong>Total a pagar:</strong> ${{ number_format($total, 2) }}</p>
+            <p><strong>Total a pagar:</strong> ${{ number_format($total, 2) }}</p> <!-- Mostrar el total calculado -->
+
             <form method="POST" action="{{ route('factura.store') }}">
                 @csrf
-{{--                <input type="hidden" name="codigoEvento" value="{{ $codigoEvento }}">
- --}}               <input type="hidden" name="cantidadBoletos" value="{{$cantidadBoletos}}">
-                    <input type="hidden" name="numeroTarjeta" value="1234567890">
-                    <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+                <div class="form-group">
+                    <label for="numeroTarjeta">Número de Tarjeta</label>
+                    <input type="text" class="form-control" id="numeroTarjeta" name="numeroTarjeta" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Confirmar Pago</button>
             </form>
-            
         </div>
     </div>
 </div>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="{{ asset('js/scripts.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>
