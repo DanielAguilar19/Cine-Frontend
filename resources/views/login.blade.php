@@ -95,19 +95,21 @@
         <form method="POST" action="/login" class="login-form">
             @csrf
             <div class="form-group">
-                <label for="email">Correo</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="correo@correo.com">
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                <label for="correo">Correo Electrónico</label>
+                <input type="email" name="correo" class="form-control" required>
             </div>
+    
             <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" class="form-control" id="password" placeholder="contraseña">
+                <label for="contrasenia">Contraseña</label>
+                <input type="password" name="contrasenia" class="form-control" required>
             </div>
+
             <div class="form-group form-check">
                 <input type="checkbox" class="form-check-input" id="check">
                 <label class="form-check-label" for="check">Check me out</label>
                 <a class="ref" href="/registro">Registrarme</a>
             </div>
+
             <button type="submit" class="btn btn-primary">Ingresar</button>
         </form>
     </body>

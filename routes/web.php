@@ -4,10 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AsientoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PeliculaController;
-
-Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos']);
-
-Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
+use App\Http\Controllers\FacturaController;
 
 Route::get('/', function(){return view('login');});
 
@@ -15,4 +12,10 @@ Route::get('/registro', function() {return view('registro');});
 
 Route::post('/salvarContacto', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
 
-Route::get('/peliculas', [PeliculaController::class, 'index']);
+Route::get('/peliculas', [PeliculaController::class, 'index'])->name('peliculas');
+    
+Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos']);
+
+Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
+
+Route::post('/factura', [FacturaController::class, 'store'])->name('factura.store');

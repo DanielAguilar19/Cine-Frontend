@@ -97,7 +97,7 @@
 
         <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento</label>
-            <input type="date" name="fechaNacimiento" class="form-control">
+            <input type="date" name="fechaNacimiento" class="form-control" required>
         </div>
 
         <div class="form-group">
@@ -117,6 +117,16 @@
 
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
+
+    <script>
+        // Este script asegura que la fecha esté en el formato aaaa-mm-dd
+        document.querySelector('.register-form').addEventListener('submit', function(event) {
+            var fechaInput = document.querySelector('input[name="fechaNacimiento"]');
+            var fecha = fechaInput.value;
+            // Aquí podrías agregar cualquier validación adicional si es necesario
+            console.log("Fecha seleccionada: " + fecha); // Esto mostrará la fecha en la consola
+        });
+    </script>
 
 </body>
 </html>
