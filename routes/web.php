@@ -16,9 +16,9 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/registro', function() {return view('registro');});
 
-//No funciona
+/* //No funciona
 Route::post('/salvarContacto', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
-//
+// */
 Route::get('/peliculas', [PeliculaController::class, 'index'])->name('peliculas');
 
 Route::get('/evento/{titulo}', [PeliculaDetalleController::class, 'show'])->name('evento.show');
@@ -28,14 +28,16 @@ Route::get('/facturacion/{evento_id}', [FacturaController::class, 'create'])->na
 Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos'])->name('asientos');
 
 Route::get('/metodoPago', [MetodoPagoController::class, 'index'])->name('pago.index');
-//RUTAS NO FUNCIONADO
+
+// RUTAS FUNCIONANDO CORRECTAMENTE
 Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
 
-Route::post('/factura', [FacturaController::class, 'store'])->name('factura.store');
+Route::post('/factura/store', [FacturaController::class, 'storeFactura'])->name('factura.store');
 
 Route::get('/detalle', [PeliculaDetalleController::class, 'index']);
-//
 
+// Guardar cliente
 Route::post('/guardar-cliente', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
-Route::post('/factura/store', [LoginController::class, 'storeFactura'])->name('factura.store');
+
+// Iniciar sesión
 Route::post('/login', [LoginController::class, 'login'])->name('login');

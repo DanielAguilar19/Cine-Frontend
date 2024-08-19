@@ -83,38 +83,37 @@
 <body>
     <form method="POST" action="{{ route('guardarCliente') }}" class="register-form">
         @csrf
-        <a href="/" class="btn-back">Regresar</a>
         <div class="form-group">
             <label for="nombreCompleto">Nombre Completo</label>
             <input type="text" name="nombreCompleto" class="form-control" required>
         </div>
-
+    
         <div class="form-group">
             <label for="clienteFrecuente">Cliente Frecuente</label>
             <input type="checkbox" name="clienteFrecuente" class="form-check-input">
         </div>
-
+    
         <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento</label>
             <input type="date" name="fechaNacimiento" class="form-control" required>
         </div>
-
+    
         <div class="form-group">
             <label for="telefono">Teléfono</label>
             <input type="text" name="telefono" class="form-control" required>
         </div>
-
+    
         <div class="form-group">
             <label for="correo">Correo Electrónico</label>
             <input type="email" name="correo" class="form-control" required>
         </div>
-
+    
         <div class="form-group">
             <label for="contrasenia">Contraseña</label>
             <input type="password" name="contrasenia" class="form-control" required>
         </div>
-
+    
         <button type="submit" class="btn btn-primary">Guardar</button>
-    </form>
+    </form>    
 </body>
 </html>

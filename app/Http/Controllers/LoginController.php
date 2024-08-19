@@ -51,16 +51,14 @@ class LoginController extends Controller
             'contrasenia' => 'required|string|min:8',
         ]);
     
-        $fechaNacimiento = $validatedData['fechaNacimiento'];
-    
         $clienteData = [
-            'codigoCliente' => 0,
+            'codigoCliente' => 0, // Puede ser omitido si la API lo maneja
             'nombreCompleto' => $validatedData['nombreCompleto'],
             'clienteFrecuente' => $req->has('clienteFrecuente') ? 1 : 0,
-            'fechaNacimiento' => $fechaNacimiento,
+            'fechaNacimiento' => $validatedData['fechaNacimiento'],
             'telefono' => $validatedData['telefono'],
             'correo' => $validatedData['correo'],
-            'contrasenia' => bcrypt($validatedData['contrasenia']),
+            'contrasenia' => $validatedData['contrasenia'], // Enviar sin encriptar si la API se encarga de esto
         ];
     
         $client = new \GuzzleHttp\Client();
@@ -83,7 +81,7 @@ class LoginController extends Controller
             // Loguea la respuesta de la API
             Log::info('Respuesta de la API:', ['status' => $statusCode, 'body' => $body]);
     
-            if ($statusCode == 200) {
+            if ($statusCode == 200 || $statusCode == 201) { // Verificar si es 201 Created
                 return redirect('/')->with('success', 'Cliente registrado exitosamente');
             } else {
                 return redirect()->back()->withErrors(['api_error' => 'Error al registrar el cliente: ' . $body]);
@@ -93,62 +91,5 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(['api_error' => 'Error al conectar con el servicio. Inténtalo nuevamente.']);
         }
     }
-
-    public function storeFactura(Request $req) {
-        // Obtener cliente logueado desde la sesión
-        $cliente = Session::get('user');
-
-        if (!$cliente) {
-            return redirect('/login')->withErrors(['login_required' => 'Por favor, inicie sesión para continuar.']);
-        }
-
-        // Suponiendo que ya tienes el ID del evento seleccionado y la cantidad de boletos
-        $codigoEvento = $req->input('codigoEvento');
-        $cantidadBoletos = $req->input('cantidadBoletos');
-
-        $client = new \GuzzleHttp\Client();
-
-        try {
-            // Llamar a la API para obtener los detalles del evento
-            $response = $client->get("http://localhost:8080/api/evento/{$codigoEvento}");
-            $eventoData = json_decode($response->getBody()->getContents(), true);
-
-            $precioPorBoleto = $eventoData['sala']['tipoSala']['precio'];
-            $total = $precioPorBoleto * $cantidadBoletos;
-
-            // Construir los datos para la solicitud POST a la API de detalle de factura
-            $detalleFacturaData = [
-                'codigoCliente' => $cliente['codigoCliente'], // Obtener de la sesión
-                'codigoEvento' => $codigoEvento,
-                'cantidadBoletos' => $cantidadBoletos,
-                'numeroTarjeta' => $req->input('numeroTarjeta'),
-            ];
-
-            // Loguear datos para depuración
-            Log::info('Datos enviados a la API de detalle de factura:', $detalleFacturaData);
-
-            $response = $client->post('http://localhost:8080/api/detallefactura/crear', [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ],
-                'json' => $detalleFacturaData,
-            ]);
-
-            $statusCode = $response->getStatusCode();
-            $body = $response->getBody()->getContents();
-
-            // Loguea la respuesta de la API
-            Log::info('Respuesta de la API de facturación:', ['status' => $statusCode, 'body' => $body]);
-
-            if ($statusCode == 200) {
-                return redirect('/')->with('success', 'Pago realizado exitosamente');
-            } else {
-                return redirect()->back()->withErrors(['api_error' => 'Error al realizar el pago: ' . $body]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Error al conectar con la API de facturación: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['api_error' => 'Error al conectar con el servicio de facturación. Inténtalo nuevamente.']);
-        }
-    }
+    
 }

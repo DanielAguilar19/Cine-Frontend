@@ -3,77 +3,82 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Factura;
-use App\Models\DetalleFactura;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class FacturaController extends Controller
 {
-    public function store(Request $request)
-    {
-        // Validar los datos del formulario
-        $validated = $request->validate([
-            'nombreCliente' => 'required|string|max:255',
-            'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
-            'nombrePelicula' => 'required|string|max:255',
-            'numeroBoletos' => 'required|integer|min:1',
-            'asientos' => 'required|array',
-            'asientos.*' => 'required|string|max:10',
-            'itemsFactura' => 'required|array',
-            'itemsFactura.*.descripcion' => 'required|string|max:255',
-            'itemsFactura.*.cantidad' => 'required|integer|min:1',
-            'itemsFactura.*.precioUnitario' => 'required|numeric|min:0',
-            'subtotal' => 'required|numeric|min:0',
-            'impuesto' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
-        ]);
-
+    public function storeFactura(Request $req) {
+        dd($req->all()); 
+        // Obtener cliente logueado desde la sesión
+        $cliente = Session::get('user');
+        if (!$cliente) {
+            return redirect('/login')->withErrors(['login_required' => 'Por favor, inicie sesión para continuar.']);
+        }
+    
+        // Verificar datos de la solicitud
+        dd($req->all());
+    
+        $codigoEvento = $req->input('codigoEvento');
+        $cantidadBoletos = $req->input('cantidadBoletos');
+    
+        if (!$codigoEvento || !$cantidadBoletos) {
+            return redirect()->back()->withErrors(['error' => 'Código de evento o cantidad de boletos faltante']);
+        }
+    
+        $client = new \GuzzleHttp\Client();
+    
         try {
-            // Guardar la factura
-            $factura = new Factura();
-            $factura->numero_factura = $this->generateFacturaNumber(); // Generar número de factura
-            $factura->nombre_cliente = $request->nombreCliente;
-            $factura->fecha = $request->fecha;
-            $factura->hora = $request->hora;
-            $factura->nombre_pelicula = $request->nombrePelicula;
-            $factura->numero_boletos = $request->numeroBoletos;
-            $factura->subtotal = $request->subtotal;
-            $factura->impuesto = $request->impuesto;
-            $factura->total = $request->total;
-            $factura->save();
-
-            // Guardar los detalles de la factura
-            foreach ($request->itemsFactura as $item) {
-                $detalle = new DetalleFactura();
-                $detalle->factura_id = $factura->id;
-                $detalle->descripcion = $item['descripcion'];
-                $detalle->cantidad = $item['cantidad'];
-                $detalle->precio_unitario = $item['precioUnitario'];
-                $detalle->total = $item['cantidad'] * $item['precioUnitario'];
-                $detalle->save();
+            // Llamar a la API para obtener los detalles del evento
+            $response = $client->get("http://localhost:8080/api/evento/{$codigoEvento}");
+            dd($response);
+            Log::info($response->getBody()->getContents());
+    
+            if ($response->getStatusCode() != 200) {
+                return redirect()->back()->withErrors(['api_error' => 'No se pudo obtener los detalles del evento']);
             }
-
-            // Guardar los asientos
-            foreach ($request->asientos as $asiento) {
-                $detalle = new DetalleFactura();
-                $detalle->factura_id = $factura->id;
-                $detalle->descripcion = "Asiento " . $asiento;
-                $detalle->cantidad = 1;
-                $detalle->precio_unitario = 0; // Asume que el precio ya está incluido en el boleto
-                $detalle->total = 0;
-                $detalle->save();
+    
+            $eventoData = json_decode($response->getBody()->getContents(), true);
+            dd($eventoData); // Verifica los datos de evento
+    
+            if (!$eventoData || !isset($eventoData['sala']['tipoSala']['precio'])) {
+                return redirect()->back()->withErrors(['api_error' => 'Detalles del evento no disponibles']);
             }
-
-            return redirect()->back()->with('success', 'Factura creada exitosamente');
+    
+            $precioPorBoleto = $eventoData['sala']['tipoSala']['precio'];
+            $total = $precioPorBoleto * $cantidadBoletos;
+    
+            $detalleFacturaData = [
+                'codigoCliente' => $cliente['codigoCliente'],
+                'codigoEvento' => $codigoEvento,
+                'cantidadBoletos' => $cantidadBoletos,
+                'numeroTarjeta' => $req->input('numeroTarjeta'),
+            ];
+    
+            Log::info('Datos enviados a la API de detalle de factura:', $detalleFacturaData);
+    
+            $response = $client->post('http://localhost:8080/api/detallefactura/crear', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'json' => $detalleFacturaData,
+            ]);
+    
+            $statusCode = $response->getStatusCode();
+            $body = $response->getBody()->getContents();
+            Log::info('Estado de respuesta:', ['status' => $statusCode, 'body' => $body]);
+    
+            if ($statusCode == 200) {
+                return redirect('/')->with('success', 'Pago realizado exitosamente');
+            } else {
+                return redirect()->back()->withErrors(['api_error' => 'Error al realizar el pago: ' . $body]);
+            }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ocurrió un error al crear la factura');
+            Log::error('Error al conectar con la API de facturación: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['api_error' => 'Error al conectar con el servicio de facturación. Inténtalo nuevamente.']);
         }
     }
-
-    private function generateFacturaNumber()
-    {
-        $lastFactura = Factura::orderBy('id', 'desc')->first();
-        $lastNumber = $lastFactura ? $lastFactura->numero_factura : 0;
-        return $lastNumber + 1;
-    }
+    
 }

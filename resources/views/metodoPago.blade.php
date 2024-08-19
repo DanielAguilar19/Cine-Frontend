@@ -16,13 +16,10 @@
             <p><strong>Total a pagar:</strong> ${{ number_format($total, 2) }}</p>
             <form method="POST" action="{{ route('factura.store') }}">
                 @csrf
-                <input type="hidden" name="cantidadBoletos" value="{{ $cantidadBoletos }}">
-                
-                <div class="form-group">
-                    <label for="numeroTarjeta">Número de Tarjeta</label>
-                    <input type="text" class="form-control" id="numeroTarjeta" name="numeroTarjeta" required>
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">Confirmar Pago</button>
+{{--                <input type="hidden" name="codigoEvento" value="{{ $codigoEvento }}">
+ --}}               <input type="hidden" name="cantidadBoletos" value="{{$cantidadBoletos}}">
+                    <input type="hidden" name="numeroTarjeta" value="1234567890">
+                    <button type="submit" class="btn btn-primary">Confirmar Pago</button>
             </form>
             
         </div>
