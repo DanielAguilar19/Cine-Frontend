@@ -45,20 +45,18 @@ class LoginController extends Controller
         $validatedData = $req->validate([
             'nombreCompleto' => 'required|string|max:255',
             'clienteFrecuente' => 'boolean',
-            'fechaNacimiento' => 'required|date_format:Y-m-d',
-            'telefono' => 'required|string|max:15',
+            'telefono' => 'required|string|max:15|regex:/^[0-9]+$/',  // Solo números permitidos
             'correo' => 'required|string|email|max:255|unique:clientes',
             'contrasenia' => 'required|string|min:8',
         ]);
     
         $clienteData = [
-            'codigoCliente' => 0, // Puede ser omitido si la API lo maneja
+            'codigoCliente' => 0, 
             'nombreCompleto' => $validatedData['nombreCompleto'],
             'clienteFrecuente' => $req->has('clienteFrecuente') ? 1 : 0,
-            'fechaNacimiento' => $validatedData['fechaNacimiento'],
             'telefono' => $validatedData['telefono'],
             'correo' => $validatedData['correo'],
-            'contrasenia' => $validatedData['contrasenia'], // Enviar sin encriptar si la API se encarga de esto
+            'contrasenia' => $validatedData['contrasenia'],
         ];
     
         $client = new \GuzzleHttp\Client();
