@@ -95,7 +95,7 @@
     </style>
     </head>
     <body>
-        <form method="POST" action="/login" class="login-form">
+        <form method="POST" action="{{ route('login') }}" class="login-form">
             @csrf
             <div class="form-group">
                 <label for="correo">Correo Electrónico</label>

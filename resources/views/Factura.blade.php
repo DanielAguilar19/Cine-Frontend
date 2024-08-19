@@ -8,8 +8,7 @@ use App\Models\DetalleFactura;
 
 class FacturaController extends Controller
 {
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         // Validar datos
         $request->validate([
             'nombreCliente' => 'required|string|max:255',
@@ -26,8 +25,10 @@ class FacturaController extends Controller
             'subtotal' => 'required|numeric|min:0',
             'impuesto' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
+            'codigoAsientos' => 'required|string', // nueva validación
+            'codigoEvento' => 'required|integer',
         ]);
-
+        
         // Guardar la factura
         $factura = new Factura();
         $factura->numero_factura = $this->generateFacturaNumber(); // Generar número de factura
@@ -40,7 +41,7 @@ class FacturaController extends Controller
         $factura->impuesto = $request->impuesto;
         $factura->total = $request->total;
         $factura->save();
-
+        
         // Guardar los detalles de la factura
         foreach ($request->itemsFactura as $item) {
             $detalle = new DetalleFactura();
@@ -51,26 +52,17 @@ class FacturaController extends Controller
             $detalle->total = $item['cantidad'] * $item['precioUnitario'];
             $detalle->save();
         }
-
-        // Guardar los asientos
-        foreach ($request->asientos as $asiento) {
-            $detalle = new DetalleFactura();
-            $detalle->factura_id = $factura->id;
-            $detalle->descripcion = "Asiento " . $asiento;
-            $detalle->cantidad = 1;
-            $detalle->precio_unitario = 0; // Asume que el precio ya está incluido en el boleto
-            $detalle->total = 0;
-            $detalle->save();
+    
+        // Guardar los asientos y crear boletos
+        $codigoAsientos = explode(',', $request->codigoAsientos);
+        foreach ($codigoAsientos as $codigoAsiento) {
+            $boleto = new Boleto();
+            $boleto->codigoEvento = $request->codigoEvento;
+            $boleto->codigoAsiento = $codigoAsiento;
+            $boleto->codigoDetalleFactura = $detalle->id;
+            $boleto->save();
         }
-
-        // aceptar factura
+    
         return redirect()->back()->with('success', 'Factura creada exitosamente');
-    }
-
-    private function generateFacturaNumber()
-    {
-        $lastFactura = Factura::orderBy('id', 'desc')->first();
-        $lastNumber = $lastFactura ? $lastFactura->numero_factura : 0;
-        return $lastNumber + 1;
     }
 }

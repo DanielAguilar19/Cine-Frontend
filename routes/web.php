@@ -6,21 +6,36 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PeliculaController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\PeliculaDetalleController;
+use App\Http\Controllers\MetodoPagoController;
 
 Route::get('/', function(){return view('login');});
 
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
 Route::get('/registro', function() {return view('registro');});
 
+//No funciona
 Route::post('/salvarContacto', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
-
+//
 Route::get('/peliculas', [PeliculaController::class, 'index'])->name('peliculas');
-    
-Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos']);
 
-Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
+Route::get('/evento/{titulo}', [PeliculaDetalleController::class, 'show'])->name('evento.show');
+    
+Route::get('/facturacion/{evento_id}', [FacturaController::class, 'create'])->name('facturacion');
+
+Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos'])->name('asientos');
+
+Route::get('/metodoPago', [MetodoPagoController::class, 'index'])->name('pago.index');
 //RUTAS NO FUNCIONADO
+Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
+
 Route::post('/factura', [FacturaController::class, 'store'])->name('factura.store');
 
 Route::get('/detalle', [PeliculaDetalleController::class, 'index']);
+//
 
-Route::get('/evento/{titulo}', [PeliculaDetalleController::class, 'show']);
+Route::post('/guardar-cliente', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
+Route::post('/factura/store', [LoginController::class, 'storeFactura'])->name('factura.store');
+Route::post('/login', [LoginController::class, 'login'])->name('login');

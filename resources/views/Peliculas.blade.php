@@ -32,13 +32,13 @@
             @foreach($peliculas as $pelicula)
                 <div class="col-md-3">
                     <div class="card mb-3">
-                        <img class="card-img-top" src="{{ $pelicula->imagen }}" alt="{{ $pelicula->titulo }}">
+                        <img class="card-img-top" src="{{ asset('movies/' . $pelicula->imagen) }}" alt="{{ $pelicula->titulo }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ $pelicula->titulo }}</h5>
                             <p class="card-text">Duración: {{ $pelicula->duracion }} minutos</p>
                             <p class="card-text">Disponible: {{ $pelicula->disponible ? 'Sí' : 'No' }}</p>
                             <p class="card-text">{{ $pelicula->descripcion }}</p>
-                            <a href="#" class="btn btn-primary">Ver más</a>
+                            <a href="{{ route('evento.show', ['titulo' => $pelicula->titulo]) }}" class="btn btn-primary">Ver más</a>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $evento['titulo'] }}</title>
+    <title>{{ $evento['pelicula']['titulo'] ?? 'Título no disponible' }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
@@ -27,37 +27,40 @@
         </div>
     </nav>
     <div class="container">
-        <h1 class="text-center">{{ $evento['titulo'] }}</h1>
+        <h1 class="text-center">{{ $evento['pelicula']['titulo'] ?? 'Título no disponible' }}</h1>
         <div class="row">
             <div class="col-md-4">
-                <img src="{{ $evento['imagen'] }}" class="img-fluid" alt="{{ $evento['titulo'] }}">
+                <img src="{{ asset('movies/' . $evento['pelicula']['imagen']) ?? 'default.jpg' }}" class="img-fluid" alt="{{ $evento['pelicula']['titulo'] ?? 'Imagen no disponible' }}">
             </div>
             <div class="col-md-8">
                 <h2>Detalles del Evento</h2>
-                <p><strong>Fecha:</strong> {{ $evento['fecha'] }}</p>
-                <p><strong>Hora de Inicio:</strong> {{ $evento['hora_inicio'] }}</p>
-                <p><strong>Idioma:</strong> {{ $evento['idioma'] }}</p>
-                <p><strong>Película:</strong> {{ $pelicula->titulo }}</p>
-                <p><strong>Descripción de la Película:</strong> {{ $pelicula->descripcion }}</p>
+                <p><strong>Fecha:</strong> {{ $evento['fechaEvento'] ?? 'Fecha no disponible' }}</p>
+                <p><strong>Hora de Inicio:</strong> {{ $evento['horaInicio'] ?? 'Hora no disponible' }}</p>
+                <p><strong>Idioma:</strong> {{ $evento['idioma'] ?? 'Idioma no disponible' }}</p>
+                <p><strong>Película:</strong> {{ $pelicula['titulo'] ?? 'Título no disponible' }}</p>
+                <p><strong>Descripción de la Película:</strong> {{ $pelicula['descripcion'] ?? 'Descripción no disponible' }}</p>
                 <h3>Salas Disponibles</h3>
                 <ul>
-                    @foreach($salas as $sala)
-                        <li>{{ $sala->nombre }} - Capacidad: {{ $sala->capacidad }}</li>
-                    @endforeach
+                    <li>{{ $sala['tipoSala']['descripcion'] ?? 'Descripción no disponible' }} - Precio: {{ $sala['tipoSala']['precio'] ?? 'Precio no disponible' }}</li>
                 </ul>
                 <h3>Horarios</h3>
                 <ul>
                     @foreach($horarios as $horario)
-                        <li>{{ $horario->hora }} - Sala: {{ $horario->sala->nombre }}</li>
+                        <li>{{ $horario['horaInicio'] ?? 'Hora no disponible' }} - Sala: {{ $sala['tipoSala']['descripcion'] ?? 'Sala no disponible' }}</li>
                     @endforeach
                 </ul>
             </div>
         </div>
+        <form method="GET" action="{{ route('asientos', ['codigoSala' => $sala['codigoSala'] ?? 0]) }}">
+            <div class="form-group">
+                <label for="cantidadBoletos">Cantidad de Boletos:</label>
+                <input type="number" class="form-control" id="cantidadBoletos" name="cantidadBoletos" min="1" max="10" required>
+            </div>
+            <input type="hidden" name="codigoEvento" value="{{ $evento['codigoEvento'] ?? 0 }}">
+            <button type="submit" class="btn btn-primary mt-3">Seleccionar Asientos</button>
+        </form>
         <div class="text-center mt-4">
-            <a href="/eventos" class="btn btn-secondary">Regresar</a>
-            <a href="{{ route('facturacion', ['evento_id' => $evento['id']]) }}" class="btn btn-primary">
-                Ir a Facturación
-            </a>
+            <a href="/peliculas" class="btn btn-secondary">Regresar</a>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
