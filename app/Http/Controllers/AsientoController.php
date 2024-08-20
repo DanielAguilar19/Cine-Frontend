@@ -11,26 +11,27 @@ class AsientoController extends Controller
         $cantidadBoletos = $request->input('cantidadBoletos');
         $codigoEvento = $request->input('codigoEvento');
     
-        // obtener asientos por sala
         $asientosSalaResponse = Http::get("http://localhost:8080/api/asientos/obtenerporsala/{$codigoSala}");
         $asientosSala = $asientosSalaResponse->json();
     
-        // loop para ver disponibilidad
         foreach ($asientosSala as &$asiento) {
-            $asiento['cssClass'] = 'unknown'; 
+            $asiento['cssClass'] = 'unknown';
+            
+            try {
+                $disponibilidadResponse = Http::post("http://localhost:8080/api/asientoevento/obtener/disponibilidad/", [
+                    'json' => ['codigoAsiento' => $asiento['codigoAsiento'], 'codigoEvento' => $codigoEvento]
+                ]);
     
-            $disponibilidadResponse = Http::post("http://localhost:8080/api/asientoevento/obtener/disponibilidad/", [
-                'codigoAsiento' => $asiento['codigoAsiento'],
-            ]);
+                $disponibilidad = $disponibilidadResponse->json();
     
-            $disponibilidad = $disponibilidadResponse->json();
-    
-            if ($disponibilidad === true) {
-                $asiento['cssClass'] = 'available';
-            } else if ($disponibilidad === false) {
-                $asiento['cssClass'] = 'unavailable';
-            } else {
-                $asiento['cssClass'] = 'unknown'; 
+                if ($disponibilidad === true) {
+                    $asiento['cssClass'] = 'available';
+                } elseif ($disponibilidad === false) {
+                    $asiento['cssClass'] = 'unavailable';
+                }
+            } catch (\Exception $e) {
+                Log::error('Error al obtener la disponibilidad del asiento: ' . $e->getMessage());
+                $asiento['cssClass'] = 'unknown';
             }
         }
     
@@ -40,7 +41,6 @@ class AsientoController extends Controller
             'codigoEvento' => $codigoEvento,
         ]);
     }
-    
 
     public function actualizarEstadoAsiento($codigoAsiento)
     {
@@ -55,4 +55,3 @@ class AsientoController extends Controller
         }
     }
 }
-

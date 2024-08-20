@@ -11,13 +11,11 @@ class FacturaController extends Controller
 {
     public function storeFactura(Request $req) {
         dd($req->all()); 
-        // Obtener cliente logueado desde la sesión
         $cliente = Session::get('user');
         if (!$cliente) {
             return redirect('/login')->withErrors(['login_required' => 'Por favor, inicie sesión para continuar.']);
         }
     
-        // Verificar datos de la solicitud
         dd($req->all());
     
         $codigoEvento = $req->input('codigoEvento');
@@ -30,7 +28,6 @@ class FacturaController extends Controller
         $client = new \GuzzleHttp\Client();
     
         try {
-            // Llamar a la API para obtener los detalles del evento
             $response = $client->get("http://localhost:8080/api/evento/{$codigoEvento}");
             dd($response);
             Log::info($response->getBody()->getContents());
@@ -40,8 +37,8 @@ class FacturaController extends Controller
             }
     
             $eventoData = json_decode($response->getBody()->getContents(), true);
-            dd($eventoData); // Verifica los datos de evento
-    
+            dd($eventoData); 
+
             if (!$eventoData || !isset($eventoData['sala']['tipoSala']['precio'])) {
                 return redirect()->back()->withErrors(['api_error' => 'Detalles del evento no disponibles']);
             }

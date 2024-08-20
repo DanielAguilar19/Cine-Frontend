@@ -116,16 +116,13 @@
 </body>
 <script>
     document.querySelector('.register-form').addEventListener('submit', function(event) {
-        // Validación personalizada para el campo teléfono
         var telefonoInput = document.querySelector('input[name="telefono"]');
         var telefono = telefonoInput.value;
 
         if (!/^[0-9]+$/.test(telefono)) {
             alert('El teléfono solo debe contener números.');
-            event.preventDefault(); // Evita que el formulario se envíe
+            event.preventDefault();
         }
-
-        // Puedes agregar más validaciones personalizadas aquí...
     });
 </script>
 </html>

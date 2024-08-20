@@ -79,11 +79,35 @@
         </form>
     </div>
 </div>
-
 <script>
     let selectedAsientos = [];
     const maxAsientos = {{ $cantidadBoletos }};
     const submitButton = document.getElementById('submitAsientos');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        submitButton.disabled = true;
+        const seatButtons = document.querySelectorAll('.seat');
+
+        seatButtons.forEach(button => {
+            const codigoAsiento = button.dataset.codigo;
+
+            fetch(`http://localhost:8080/api/asientoevento/obtener/disponibilidad/${codigoAsiento}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data === true) {
+                        button.classList.add('available', 'btn-success');
+                    } else {
+                        button.classList.add('unavailable', 'btn-danger');
+                        button.disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar la disponibilidad:', error);
+                    button.classList.add('unavailable', 'btn-danger');
+                    button.disabled = true;
+                });
+        });
+    });
 
     function cambiarColorAsiento(event, codigoAsiento) {
         const seat = event.target;
@@ -106,11 +130,6 @@
             submitButton.disabled = true;
         }
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        submitButton.disabled = true;
-    });
 </script>
-
 </body>
 </html>

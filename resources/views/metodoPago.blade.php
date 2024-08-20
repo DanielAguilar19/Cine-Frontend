@@ -13,9 +13,7 @@
             <h2 class="text-center">Método de Pago</h2>
         </div>
         <div class="card-body">
-            <p><strong>Total a pagar:</strong> ${{ number_format($total, 2) }}</p> <!-- Mostrar el total calculado -->
-
-            <form method="POST" action="{{ route('factura.store') }}">
+            <form method="GET" action="{{ route('peliculas') }}">
                 @csrf
                 <div class="form-group">
                     <label for="numeroTarjeta">Número de Tarjeta</label>

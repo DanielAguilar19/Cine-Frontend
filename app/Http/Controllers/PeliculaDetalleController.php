@@ -10,7 +10,6 @@ class PeliculaDetalleController extends Controller
     $client = new Client();
 
         try {
-            // Realizar la solicitud GET a la API para obtener el evento por título
             $response = $client->get('http://localhost:8080/api/evento/obtenerPorNombre', [
                 'query' => [
                     'titulo' => $titulo
@@ -20,12 +19,11 @@ class PeliculaDetalleController extends Controller
         
             $eventos = json_decode($response->getBody(), true);
         
-            // Tomar el primer evento de la respuesta
             if (!empty($eventos) && isset($eventos[0])) {
                 $evento = $eventos[0];
                 $pelicula = $evento['pelicula'];
                 $sala = $evento['sala'];
-                $horarios = [$evento];  // Si sólo hay un horario en el evento, lo ponemos en un array
+                $horarios = [$evento];  
             } else {
                 return redirect()->back()->withErrors(['error' => 'Evento no encontrado']);
             }

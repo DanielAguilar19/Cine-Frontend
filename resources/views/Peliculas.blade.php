@@ -25,6 +25,7 @@
                 </li>
             </ul>
         </div>
+        <a href="/">Logout</a>
     </nav>
     <div class="container">
         <h1 class="text-center">Películas en cartelera</h1>

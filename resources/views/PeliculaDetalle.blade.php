@@ -17,14 +17,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/eventos">Eventos</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Salas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Horarios</a>
-                </li>
             </ul>
         </div>
+        <a href="/">Logout</a>
     </nav>
     <div class="container">
         <h1 class="text-center">{{ $evento['pelicula']['titulo'] ?? 'Título no disponible' }}</h1>
@@ -73,23 +68,19 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const precioPorBoleto = {{ $sala['tipoSala']['precio'] ?? 0 }}; // Obtener el precio por boleto
+            const precioPorBoleto = {{ $sala['tipoSala']['precio'] ?? 0 }};
             const cantidadBoletosInput = document.getElementById('cantidadBoletos');
             const totalInput = document.getElementById('total');
-            const totalHiddenInput = document.getElementById('totalHidden'); // El campo hidden para el total
-    
-            // Función para actualizar el total
+            const totalHiddenInput = document.getElementById('totalHidden');
             function actualizarTotal() {
                 const cantidad = parseInt(cantidadBoletosInput.value) || 0;
                 const total = cantidad * precioPorBoleto;
                 totalInput.value = `$${total.toFixed(2)}`;
-                totalHiddenInput.value = total.toFixed(2); // Actualiza el campo hidden
+                totalHiddenInput.value = total.toFixed(2); 
             }
     
-            // Actualizar el total cada vez que el usuario cambie la cantidad de boletos
             cantidadBoletosInput.addEventListener('input', actualizarTotal);
     
-            // Calcular el total al cargar la página
             actualizarTotal();
         });
     </script>

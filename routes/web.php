@@ -10,7 +10,7 @@ use App\Http\Controllers\MetodoPagoController;
 
 Route::get('/', function(){return view('login');});
 
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -25,19 +25,17 @@ Route::get('/metodoPago', [MetodoPagoController::class, 'index'])->name('pago.in
 Route::post('/factura/store', [FacturaController::class, 'storeFactura'])->name('factura.store');
 
 Route::get('/detalle', [PeliculaDetalleController::class, 'index']);
-/* //No funciona
-Route::post('/salvarContacto', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
-// */
-    
-Route::get('/facturacion/{evento_id}', [FacturaController::class, 'create'])->name('facturacion');
 
 Route::get('/asientos/{codigoSala}', [AsientoController::class, 'showAsientos'])->name('asientos');
 
-// RUTAS FUNCIONANDO CORRECTAMENTE
+Route::post('/salvarContacto', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
+/* No funciona
+    
+Route::get('/facturacion/{evento_id}', [FacturaController::class, 'create'])->name('facturacion');
+
+
 Route::patch('/asientos/actualizar/{codigoAsiento}', [AsientoController::class, 'actualizarEstadoAsiento']);
+ */
 
-// Guardar cliente
+
 Route::post('/guardar-cliente', [LoginController::class, 'salvarCliente'])->name('guardarCliente');
-
-// Iniciar sesión
-Route::post('/login', [LoginController::class, 'login'])->name('login');
