@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use GuzzleHttp\Client;
 
 class FacturaController extends Controller
 {
@@ -25,7 +25,7 @@ class FacturaController extends Controller
             return redirect()->back()->withErrors(['error' => 'Código de evento o cantidad de boletos faltante']);
         }
     
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
     
         try {
             $response = $client->get("http://localhost:8080/api/evento/{$codigoEvento}");
@@ -53,7 +53,7 @@ class FacturaController extends Controller
                 'numeroTarjeta' => $req->input('numeroTarjeta'),
             ];
     
-            Log::info('Datos enviados a la API de detalle de factura:', $detalleFacturaData);
+            Log::info('factura:', $detalleFacturaData);
     
             $response = $client->post('http://localhost:8080/api/detallefactura/crear', [
                 'headers' => [

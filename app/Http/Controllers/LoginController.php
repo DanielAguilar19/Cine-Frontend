@@ -12,32 +12,24 @@ class LoginController extends Controller
         if ($request->isMethod('post')) {
             $client = new Client();
             try {
-                // Realizar la solicitud GET a la API de Java para autenticar al usuario
                 $response = $client->get('http://localhost:8080/api/cliente/obtenerPorCorreo', [
                     'query' => [
-                        'correo' => $request->input('correo'), // Correo del usuario
-                        'contrasenia' => $request->input('contrasenia'), // Contraseña del usuario
+                        'correo' => $request->input('correo'), 
+                        'contrasenia' => $request->input('contrasenia'),
                     ],
                     'headers' => ['Accept' => 'application/json'],
                 ]);
-                // Decodificar la respuesta JSON
                 $user = json_decode($response->getBody(), true);
-                // Verificar si la respuesta contiene un código de cliente válido
                 if (!empty($user) && isset($user['codigoCliente'])) {
-                    // Guardar la información del usuario en la sesión de Laravel
                     Session::put('user', $user);
-                    // Redirigir al usuario a la página de películas
                     return redirect()->route('peliculas');
                 }
-                // Si las credenciales no son correctas
                 return back()->withErrors(['correo' => 'Correo o contraseña incorrecta']);
             } catch (\Exception $e) {
-                // Registrar el error en los logs
                 Log::error('Error al conectar con la API: ' . $e->getMessage());
                 return back()->withErrors(['api_error' => 'Error al conectar con el servicio. Inténtalo nuevamente.']);
             }
         }
-        // Redirigir a la página de inicio si no es una solicitud POST
         return redirect('/');
     }
 
@@ -45,7 +37,7 @@ class LoginController extends Controller
         $validatedData = $req->validate([
             'nombreCompleto' => 'required|string|max:255',
             'clienteFrecuente' => 'boolean',
-            'telefono' => 'required|string|max:15|regex:/^[0-9]+$/',  // Solo números permitidos
+            'telefono' => 'required|string|max:15|regex:/^[0-9]+$/', 
             'correo' => 'required|string|email|max:255|unique:clientes',
             'contrasenia' => 'required|string|min:8',
         ]);
@@ -62,7 +54,6 @@ class LoginController extends Controller
         $client = new \GuzzleHttp\Client();
     
         try {
-            // Loguea los datos que se enviarán
             Log::info('Datos enviados a la API:', $clienteData);
     
             $response = $client->post('http://localhost:8080/api/cliente/crear', [
@@ -76,10 +67,9 @@ class LoginController extends Controller
             $statusCode = $response->getStatusCode();
             $body = $response->getBody()->getContents();
     
-            // Loguea la respuesta de la API
             Log::info('Respuesta de la API:', ['status' => $statusCode, 'body' => $body]);
     
-            if ($statusCode == 200 || $statusCode == 201) { // Verificar si es 201 Created
+            if ($statusCode == 200 || $statusCode == 201) {
                 return redirect('/')->with('success', 'Cliente registrado exitosamente');
             } else {
                 return redirect()->back()->withErrors(['api_error' => 'Error al registrar el cliente: ' . $body]);
